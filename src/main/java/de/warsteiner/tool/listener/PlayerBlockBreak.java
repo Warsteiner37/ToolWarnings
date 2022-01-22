@@ -80,15 +80,15 @@ public class PlayerBlockBreak implements Listener {
 				 
 					if(cfg.getBoolean("Enable_Title")) {
 						
-						String title1 = cfg.getString("Title_First").replaceAll("<item>", dis).replaceAll("&", "ง");
-						String title2 = cfg.getString("Title_Second").replaceAll("<item>", dis).replaceAll("&", "ง");
+						String title1 = cfg.getString("Title_First").replaceAll("<item>", dis).replaceAll("&", "ยง");
+						String title2 = cfg.getString("Title_Second").replaceAll("<item>", dis).replaceAll("&", "ยง");
 						
 						player.sendTitle(toHex(title1), toHex(title2));
 					}
 					
 					if(cfg.getBoolean("Enable_Message")) {
 						
-						String m = cfg.getString("Message").replaceAll("<item>", dis).replaceAll("&", "ง");
+						String m = cfg.getString("Message").replaceAll("<item>", dis).replaceAll("&", "ยง");
 					 
 						player.sendMessage(toHex(m));
 					}

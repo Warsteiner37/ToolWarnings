@@ -32,12 +32,12 @@ public class ToolsPlugin extends JavaPlugin {
 
 		new UpdateChecker(this, 98981).getVersion(version -> {
 			if (!this.getDescription().getVersion().equals(version)) {
-				getLogger().warning("§b§lTheres a new Plugin Version available! You run on version : v"
+				getLogger().warning("Â§bÂ§lTheres a new Plugin Version available! You run on version : v"
 						+ getDescription().getVersion() + " -> new version : " + version);
 			}
 		});
 
-		this.getLogger().info("§4§lToolWarings §asuccessfull loaded!");
+		this.getLogger().info("ï¿½4ï¿½lToolWarings ï¿½asuccessfull loaded!");
 
 	}
 
@@ -59,7 +59,7 @@ public class ToolsPlugin extends JavaPlugin {
 		try {
 			config.load();
 		} catch (IOException e) {
-			this.getLogger().warning("§4§lFailed to create Config Files");
+			this.getLogger().warning("Â§4Â§lFailed to create Config Files");
 			e.printStackTrace();
 		}
 	}
