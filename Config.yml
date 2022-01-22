@@ -13,6 +13,10 @@
 #when the duability is less then this amount
 WarnAt: 10
 
+Permissions: true
+
+Permission: "plugin.warn.use"
+
 Worlds:
   - "world"
   - "world_nether"
@@ -29,4 +33,4 @@ Title_Second: "&7Your tool will &cbreak &7soon!"
 
 Enable_Message: false
 
-Message: "&8[&3Server&8] &7Your tool will &cbreak &7soon!"
+Message: "&8[&3Server&8] &7Your tool will &cbreak &7soon! &8(<item>&8)"

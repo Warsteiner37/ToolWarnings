@@ -1,5 +1,5 @@
 main: de.warsteiner.tool.ToolsPlugin
-version: 0.0.1
+version: 0.1.2
 name: ToolWarnings
 author: Warsteiner37
 api-version: 1.18

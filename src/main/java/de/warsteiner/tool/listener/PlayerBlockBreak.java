@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -34,6 +35,10 @@ public class PlayerBlockBreak implements Listener {
 				
 				Player player = event.getPlayer();
 				
+				if(player.getGameMode() == GameMode.CREATIVE) {
+					return;
+				}
+				
 				if(event.isCancelled()) {
 					event.setCancelled(true);
 					return;
@@ -46,6 +51,13 @@ public class PlayerBlockBreak implements Listener {
 				if(player.getItemInHand().getType() == null || player.getItemInHand().getType() == Material.AIR) {
 					return;
 				}
+				
+				if(cfg.getBoolean("Permissions")) {
+					if(!player.hasPermission("Permission")) {
+						return;
+					}
+				}
+				
 				ItemStack i = player.getItemInHand();
 				
 				if(!cfg.getStringList("Items").contains(""+i.getType())) {
@@ -63,18 +75,20 @@ public class PlayerBlockBreak implements Listener {
 				int rechnung = item - dua;
 				 
 				if(rechnung <= warning) { 
+					
+					String dis = i.getItemMeta().getDisplayName();
 				 
 					if(cfg.getBoolean("Enable_Title")) {
 						
-						String title1 = cfg.getString("Title_First").replaceAll("&", "§");
-						String title2 = cfg.getString("Title_Second").replaceAll("&", "§");
+						String title1 = cfg.getString("Title_First").replaceAll("<item>", dis).replaceAll("&", "§");
+						String title2 = cfg.getString("Title_Second").replaceAll("<item>", dis).replaceAll("&", "§");
 						
 						player.sendTitle(toHex(title1), toHex(title2));
 					}
 					
 					if(cfg.getBoolean("Enable_Message")) {
 						
-						String m = cfg.getString("Message").replaceAll("&", "§");
+						String m = cfg.getString("Message").replaceAll("<item>", dis).replaceAll("&", "§");
 					 
 						player.sendMessage(toHex(m));
 					}
