@@ -34,3 +34,13 @@ Title_Second: "&7Your tool will &cbreak &7soon!"
 Enable_Message: false
 
 Message: "&8[&3Server&8] &7Your tool will &cbreak &7soon! &8(<item>&8)"
+
+Enable_Sound: true
+
+Sound:
+
+  Type: "BLOCK_ANVIL_BREAK"
+
+  Volume: 1
+
+  Pitch: 2

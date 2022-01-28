@@ -32,12 +32,11 @@ public class ToolsPlugin extends JavaPlugin {
 
 		new UpdateChecker(this, 98981).getVersion(version -> {
 			if (!this.getDescription().getVersion().equals(version)) {
-				getLogger().warning("§b§lTheres a new Plugin Version available! You run on version : v"
-						+ getDescription().getVersion() + " -> new version : " + version);
+				this.getLogger().warning("§7Theres a new Plugin Version §aavailable§7! You run on version : §c"+plugin.getDescription().getVersion()+" §8-> §7new version : §a"+version);
 			}
 		});
 
-		this.getLogger().info("�4�lToolWarings �asuccessfull loaded!");
+		this.getLogger().info("§4§lToolWarings §asuccessfull loaded!");
 
 	}
 

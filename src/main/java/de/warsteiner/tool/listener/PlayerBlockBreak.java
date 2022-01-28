@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -91,6 +92,18 @@ public class PlayerBlockBreak implements Listener {
 						String m = cfg.getString("Message").replaceAll("<item>", dis).replaceAll("&", "§");
 					 
 						player.sendMessage(toHex(m));
+					}
+					
+					if(cfg.getBoolean("Enable_Sound")) {
+						String type = cfg.getString("Sound.Type").toUpperCase();
+						if(Sound.valueOf(type) == null) {
+							player.sendMessage("§cToolWarnings §8-> §cError on playing Sound! Sound type not found! ");
+							return;
+						}
+						int vol = cfg.getInt("Sound.Volume");
+						int pitch = cfg.getInt("Sound.Pitch");
+						 
+						player.playSound(player.getLocation(), Sound.valueOf(type), vol, pitch);
 					}
 					
 				}
