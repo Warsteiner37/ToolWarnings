@@ -2,42 +2,57 @@ package de.warsteiner.tool;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
- 
+
+import de.warsteiner.datax.SimpleAPI; 
 import de.warsteiner.tool.listener.PlayerBlockBreak;
 import de.warsteiner.tool.utils.Metrics;
-import de.warsteiner.tool.utils.UpdateChecker;
+import de.warsteiner.tool.utils.PluginModule; 
 import de.warsteiner.tool.utils.YamlConfigFile;
 
 public class ToolsPlugin extends JavaPlugin {
 
 	private static ToolsPlugin plugin;
-
+	private ExecutorService executor;
 	private YamlConfigFile config;
 
-	@Override
-	public void onEnable() {
-
+	public void onLoad() {
+		
 		plugin = this;
-
+		executor = Executors.newFixedThreadPool(1);
+		
 		createFolders();
 
 		setupConfigs();
-
+		if(isInstalledAPI()) {
+		this.getExecutor().execute(() -> {   
+			if(config.getConfig().getBoolean("CheckForUpdates")) {
+				SimpleAPI.getPlugin().getWebManager().loadVersionAndCheckUpdate("https://api.war-projects.com/v1/toolwarnings/version.txt", "ToolWarnings",getDescription().getVersion());
+			}
+			SimpleAPI.getPlugin().getModuleRegistry().getModuleList().add(new PluginModule());
+			this.getLogger().info("§6Hooked into SimpleAPI!");
+		});
+		}
+	}
+	
+	@Override
+	public void onEnable() {
+ 
 		Bukkit.getPluginManager().registerEvents(new PlayerBlockBreak(this.config.getConfig()), this);
 
 		new Metrics(this, 14014);
-
-		new UpdateChecker(this, 98981).getVersion(version -> {
-			if (!this.getDescription().getVersion().equals(version)) {
-				this.getLogger().warning("§7Theres a new Plugin Version §aavailable§7! You run on version : §c"+plugin.getDescription().getVersion()+" §8-> §7new version : §a"+version);
-			}
-		});
-
+ 
 		this.getLogger().info("§4§lToolWarings §asuccessfull loaded!");
 
+	}
+	
+	public ExecutorService getExecutor() {
+		return executor;
 	}
 
 	public static ToolsPlugin getPlugin() {
@@ -48,6 +63,14 @@ public class ToolsPlugin extends JavaPlugin {
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdir();
 		}
+	}
+	
+	public boolean isInstalledAPI() {
+		Plugin wgPlugin = Bukkit.getServer().getPluginManager().getPlugin("SimpleAPI");
+		if (wgPlugin != null) {
+			return true;
+		}
+		return false;
 	}
 
 	public void setupConfigs() {

@@ -13,6 +13,8 @@
 #when the duability is less then this amount
 WarnAt: 10
 
+CheckForUpdates: true
+
 Permissions: true
 
 Permission: "plugin.warn.use"
