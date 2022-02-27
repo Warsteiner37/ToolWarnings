@@ -26,6 +26,23 @@ Worlds:
 Items:
   - "IRON_PICKAXE"
   - "IRON_AXE"
+  
+EfficiencyLevels:
+
+  1:
+    WarnAt: 20
+    
+  2:
+    WarnAt: 30
+    
+  3:
+    WarnAt: 40
+    
+  4:
+    WarnAt: 50
+    
+  5:
+    WarnAt: 70
 
 Enable_Title: true
 

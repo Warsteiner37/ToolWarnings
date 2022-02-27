@@ -8,6 +8,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,85 +33,98 @@ public class PlayerBlockBreak implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBreak(BlockBreakEvent event) {
 		Bukkit.getScheduler().runTaskAsynchronously(ToolsPlugin.getPlugin(), () -> {
-			try {
-				
-				Player player = event.getPlayer();
-				
-				if(player.getGameMode() == GameMode.CREATIVE) {
+			Player player = event.getPlayer();
+			
+			if(player.getGameMode() == GameMode.CREATIVE) {
+				return;
+			}
+			
+			if(event.isCancelled()) {
+				event.setCancelled(true);
+				return;
+			}
+			
+			if(player.getItemInHand() == null) {
+				return;
+			}
+	 
+			if(player.getItemInHand().getType() == null || player.getItemInHand().getType() == Material.AIR) {
+				return;
+			}
+			
+			if(cfg.getBoolean("Permissions")) {
+				if(!player.hasPermission("Permission")) {
 					return;
 				}
+			}
+			
+			ItemStack i = player.getItemInHand();
+			
+			if(!cfg.getStringList("Items").contains(""+i.getType())) {
+				return;
+			}
+			
+			if(!cfg.getStringList("Worlds").contains(player.getWorld().getName())) {
+				return;
+			}
+			
+			short dua = i.getDurability();
+			short item = i.getType().getMaxDurability();
+			
+			int warning = 0;
+			
+			if(getLevelOfEnchant(i) != 0) {
+				int lvl = getLevelOfEnchant(i); 
+				if( cfg.getInt("EfficiencyLevels."+lvl+".WarnAt") != 0) {
+					warning =  cfg.getInt("EfficiencyLevels."+lvl+".WarnAt");
+				} else {
+					warning = cfg.getInt("WarnAt");
+				}
+			} else {
+				warning = cfg.getInt("WarnAt");
+			} 
+			int rechnung = item - dua;
+			 
+			if(rechnung <= warning) { 
 				
-				if(event.isCancelled()) {
-					event.setCancelled(true);
-					return;
+				String dis = i.getItemMeta().getDisplayName();
+			 
+				if(cfg.getBoolean("Enable_Title")) {
+					
+					String title1 = cfg.getString("Title_First").replaceAll("<item>", dis).replaceAll("&", "§");
+					String title2 = cfg.getString("Title_Second").replaceAll("<item>", dis).replaceAll("&", "§");
+					
+					player.sendTitle(toHex(title1), toHex(title2));
 				}
 				
-				if(player.getItemInHand() == null) {
-					return;
-				}
-		 
-				if(player.getItemInHand().getType() == null || player.getItemInHand().getType() == Material.AIR) {
-					return;
+				if(cfg.getBoolean("Enable_Message")) {
+					
+					String m = cfg.getString("Message").replaceAll("<item>", dis).replaceAll("&", "§");
+				 
+					player.sendMessage(toHex(m));
 				}
 				
-				if(cfg.getBoolean("Permissions")) {
-					if(!player.hasPermission("Permission")) {
+				if(cfg.getBoolean("Enable_Sound")) {
+					String type = cfg.getString("Sound.Type").toUpperCase();
+					if(Sound.valueOf(type) == null) {
+						player.sendMessage("§cToolWarnings §8-> §cError on playing Sound! Sound type not found! ");
 						return;
 					}
-				}
-				
-				ItemStack i = player.getItemInHand();
-				
-				if(!cfg.getStringList("Items").contains(""+i.getType())) {
-					return;
-				}
-				
-				if(!cfg.getStringList("Worlds").contains(player.getWorld().getName())) {
-					return;
-				}
-				
-				short dua = i.getDurability();
-				short item = i.getType().getMaxDurability();
-				
-				int warning = cfg.getInt("WarnAt");
-				int rechnung = item - dua;
-				 
-				if(rechnung <= warning) { 
-					
-					String dis = i.getItemMeta().getDisplayName();
-				 
-					if(cfg.getBoolean("Enable_Title")) {
-						
-						String title1 = cfg.getString("Title_First").replaceAll("<item>", dis).replaceAll("&", "§");
-						String title2 = cfg.getString("Title_Second").replaceAll("<item>", dis).replaceAll("&", "§");
-						
-						player.sendTitle(toHex(title1), toHex(title2));
-					}
-					
-					if(cfg.getBoolean("Enable_Message")) {
-						
-						String m = cfg.getString("Message").replaceAll("<item>", dis).replaceAll("&", "§");
+					int vol = cfg.getInt("Sound.Volume");
+					int pitch = cfg.getInt("Sound.Pitch");
 					 
-						player.sendMessage(toHex(m));
-					}
-					
-					if(cfg.getBoolean("Enable_Sound")) {
-						String type = cfg.getString("Sound.Type").toUpperCase();
-						if(Sound.valueOf(type) == null) {
-							player.sendMessage("§cToolWarnings §8-> §cError on playing Sound! Sound type not found! ");
-							return;
-						}
-						int vol = cfg.getInt("Sound.Volume");
-						int pitch = cfg.getInt("Sound.Pitch");
-						 
-						player.playSound(player.getLocation(), Sound.valueOf(type), vol, pitch);
-					}
-					
+					player.playSound(player.getLocation(), Sound.valueOf(type), vol, pitch);
 				}
-			} catch (Exception e) { 
-				e.printStackTrace();
+				
 			}
 		});
+	}
+
+	public int getLevelOfEnchant(ItemStack item) {
+		 
+		int level = item.getEnchantmentLevel(Enchantment.DIG_SPEED);
+		 
+		return level;
 	}
 	 
 	public String toHex(String motd) {
